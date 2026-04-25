@@ -25,7 +25,7 @@ const LogIn = () => {
         position: "top-right"
       });
       setTimeout(() => {
-        navigate("/");
+        navigate("/dashboard");
       }, 1500);
     } catch (error) {
       toast.error(error?.data?.message || error.message);

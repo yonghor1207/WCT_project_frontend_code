@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import LogIn from "./Pages/Auth/LogIn";
 import SignUp from "./Pages/Auth/SignUp";
+import Landing from "./Pages/Landing";
 import AdminLayout from "./Components/Admin/AdminLayout";
 import Dashboard from "./Pages/Admin/Dashboard";
 import Teacher from "./Pages/Admin/Teacher";
@@ -26,6 +27,10 @@ import AddAttendance from "./Components/Admin/Attendance/AddAttendance";
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <Landing />,
+  },
+  {
+    path: "/dashboard",
     element: (
       <ProtectedRoute>
         <AdminLayout />
@@ -33,80 +38,135 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/",
+        index: true,
         element: <Dashboard />,
       },
+    ],
+  },
+  {
+    path: "/teacher",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path: "/teacher",
+        index: true,
         element: <Teacher />,
       },
       {
-        path: "/teacher/createTeacher",
+        path: "createTeacher",
         element: <AddTeacher />,
       },
       {
-        path: "/teacher/:id",
+        path: ":id",
         element: <AddTeacher />,
       },
-
+    ],
+  },
+  {
+    path: "/student",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path: "/student",
+        index: true,
         element: <Student />,
       },
       {
-        path: "/student/createStudent",
+        path: "createStudent",
         element: <AddStudent />,
       },
       {
-        path: "/student/:id",
+        path: ":id",
         element: <AddStudent />,
       },
+    ],
+  },
+  {
+    path: "/attendance",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path: "/attendance",
+        index: true,
         element: <Attendance />,
       },
       {
-        path: "/attendance/createAttendance",
+        path: "createAttendance",
         element: <AddAttendance />,
       },
+    ],
+  },
+  {
+    path: "/payment",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path: "/payment",
+        index: true,
         element: <Payment />,
       },
       {
-        path: "/payment/createPayment",
+        path: "createPayment",
         element: <AddPayment />,
       },
       {
-        path: "/payment/:id",
+        path: ":id",
         element: <AddPayment />,
       },
-      // {
-      //   path: "/schedule",
-      //   element: <Schedule />,
-      // },
+    ],
+  },
+  {
+    path: "/classroom",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path: "/classroom",
+        index: true,
         element: <Classrooms />,
       },
       {
-        path: "/classroom/createClassroom",
+        path: "createClassroom",
         element: <AddClassroom />,
       },
       {
-        path: "/classroom/:id",
+        path: ":id",
         element: <AddClassroom />,
       },
+    ],
+  },
+  {
+    path: "/course",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
       {
-        path: "/course",
+        index: true,
         element: <Course />,
       },
       {
-        path: "/course/createCourse",
+        path: "createCourse",
         element: <AddCourse />,
       },
       {
-        path: "/course/:id",
+        path: ":id",
         element: <AddCourse />,
       },
     ],

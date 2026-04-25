@@ -7,26 +7,23 @@ const getInitialAuthState = () => {
     const role = localStorage.getItem("role");
 
     let isAuthenticated = false;
-    // let tokenExpiration = null;
 
-    // if (token) {
-    //     try {
-    //         const decoded = jwtDecode(token);
-    //         tokenExpiration = decoded.exp * 1000;
-    //         isAuthenticated = decoded.exp * 1000 > Date.now();
-    //     } catch (error) {
-    //         localStorage.removeItem("user");
-    //         localStorage.removeItem("token");
-    //         localStorage.removeItem("role");
-    //         localStorage.removeItem("tokenExpiration");
-    //     }
-    // }
+    if (token && user) {
+        try {
+            const decoded = jwtDecode(token);
+            isAuthenticated = decoded.exp * 1000 > Date.now();
+        } catch (error) {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            localStorage.removeItem("tokenExpiration");
+        }
+    }
 
     return {
         user: user ? user : null,
         token: token ? token : null,
         role: role ? role : null,
-        // tokenExpiration,
         isAuthenticated,
         isLoading: false,
         error: null,
@@ -43,7 +40,6 @@ const authSlice = createSlice({
             state.user = action.payload.user;
             state.token = action.payload.token;
             state.role = action.payload.user.role;
-            // state.tokenExpiration = decoded.exp * 1000;
             state.isAuthenticated = true;
 
             localStorage.setItem("user", JSON.stringify(action.payload.user));
