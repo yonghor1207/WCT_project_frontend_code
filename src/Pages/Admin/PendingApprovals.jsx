@@ -3,47 +3,103 @@ import { toast } from "react-toastify";
 import { CheckCircle, XCircle, Mail, User } from "lucide-react";
 
 const PendingApprovals = () => {
-  const [pendingTeachers, setPendingTeachers] = useState([
-    // Mock data - replace with API call
-    {
-      id: 1,
-      first_name: "John",
-      last_name: "Doe",
-      email: "john.doe@example.com",
-      created_at: "2025-01-15",
-    },
-    {
-      id: 2,
-      first_name: "Jane",
-      last_name: "Smith",
-      email: "jane.smith@example.com",
-      created_at: "2025-01-16",
-    },
-  ]);
+  const [pendingTeachers, setPendingTeachers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch pending teachers from backend
+  useEffect(() => {
+    fetchPendingTeachers();
+  }, []);
+
+  const fetchPendingTeachers = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://127.0.0.1:8000/api/admin/users?status=0", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch pending teachers");
+      }
+
+      const data = await response.json();
+      // Filter only teachers with status 0 (pending)
+      const teachers = data.data.data || data.data || [];
+      const pendingOnly = teachers.filter(
+        (user) => user.role === "teacher" && user.status === 0
+      );
+      setPendingTeachers(pendingOnly);
+    } catch (error) {
+      toast.error("Failed to load pending approvals");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleApprove = async (teacherId) => {
     try {
-      // TODO: Call API to approve teacher
-      // await approveTeacher(teacherId);
-      
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/admin/users/${teacherId}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to approve teacher");
+      }
+
       setPendingTeachers(pendingTeachers.filter((t) => t.id !== teacherId));
       toast.success("Teacher approved successfully!");
     } catch (error) {
       toast.error("Failed to approve teacher");
+      console.error(error);
     }
   };
 
   const handleReject = async (teacherId) => {
     try {
-      // TODO: Call API to reject teacher
-      // await rejectTeacher(teacherId);
-      
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/admin/users/${teacherId}/deactivate`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to reject teacher");
+      }
+
       setPendingTeachers(pendingTeachers.filter((t) => t.id !== teacherId));
       toast.success("Teacher rejected");
     } catch (error) {
       toast.error("Failed to reject teacher");
+      console.error(error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-screen">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
