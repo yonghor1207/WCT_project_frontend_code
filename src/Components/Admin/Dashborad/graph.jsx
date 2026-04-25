@@ -81,10 +81,10 @@ const Graph = () => {
             <option value="3months">Last 3 Months</option>
             <option value="1month">Last Month</option>
           </select>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             <Filter className="w-4 h-4" />
             Filters
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -146,8 +146,7 @@ const Graph = () => {
       </div>
 
       {/* Weekly Activity and Subject Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Weekly Activity */}
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-2">
           <ChartCard title="Weekly Activity" icon={Users}>
             <ResponsiveContainer width="100%" height={300}>
@@ -180,7 +179,7 @@ const Graph = () => {
             </ResponsiveContainer>
           </ChartCard>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -12,7 +12,10 @@ import {
   User,
   AlertTriangle,
 } from "lucide-react";
-import { useGetAttendanceQuery, useVerifyAttendanceMutation } from "../../../redux/hooks/attendaceApiSlice";
+import {
+  useGetAttendanceQuery,
+  useVerifyAttendanceMutation,
+} from "../../../redux/hooks/attendaceApiSlice";
 import { useGetClassroomQuery } from "../../../redux/hooks/classroomApiSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -27,14 +30,14 @@ const AttendanceManagement = () => {
     data: attendanceResponse,
     isLoading: isLoadingAttendance,
     isError: isErrorAttendance,
-    refetch
+    refetch,
   } = useGetAttendanceQuery();
 
   // Fetch classroom data
   const {
     data: classroomResponse,
     isLoading: isLoadingClassroom,
-    isError: isErrorClassroom
+    isError: isErrorClassroom,
   } = useGetClassroomQuery();
 
   // Extract data from API responses
@@ -49,7 +52,7 @@ const AttendanceManagement = () => {
     try {
       await verifyAttendance({
         id,
-        status: { status: status }  // This matches what your backend expects
+        status: { status: status }, // This matches what your backend expects
       }).unwrap();
       toast.success("Update status attendance success");
       refetch(); // Refresh the data after successful verification
@@ -70,25 +73,30 @@ const AttendanceManagement = () => {
   };
 
   // Filter attendance records based on selected classroom and search term
-  const filteredAttendance = attendanceRecords.filter(record => {
-    const matchesClassroom = selectedClassroom ? record.classroom_id.toString() === selectedClassroom : true;
-    const matchesSearch = searchTerm ?
-      record.user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      record.user.last_name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+  const filteredAttendance = attendanceRecords.filter((record) => {
+    const matchesClassroom = selectedClassroom
+      ? record.classroom_id.toString() === selectedClassroom
+      : true;
+    const matchesSearch = searchTerm
+      ? record.user.first_name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        record.user.last_name.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
     return matchesClassroom && matchesSearch;
   });
 
   // Calculate attendance stats
   const presentCount = filteredAttendance.filter(
-    record => record.status === "present"
+    (record) => record.status === "present",
   ).length;
 
   const absentCount = filteredAttendance.filter(
-    record => record.status === "absent"
+    (record) => record.status === "absent",
   ).length;
 
   const lateCount = filteredAttendance.filter(
-    record => record.status === "late"
+    (record) => record.status === "late",
   ).length;
 
   // Navigation functions
@@ -109,11 +117,19 @@ const AttendanceManagement = () => {
   };
 
   if (isLoadingClassroom || isLoadingAttendance) {
-    return <div className="min-h-screen p-6 flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen p-6 flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   if (isErrorClassroom || isErrorAttendance) {
-    return <div className="min-h-screen p-6 flex items-center justify-center text-red-500">Error loading data</div>;
+    return (
+      <div className="min-h-screen p-6 flex items-center justify-center text-red-500">
+        Error loading data
+      </div>
+    );
   }
 
   const addNew = () => {
@@ -121,7 +137,7 @@ const AttendanceManagement = () => {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div>
       <div className="mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -134,7 +150,7 @@ const AttendanceManagement = () => {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
               <Download className="w-4 h-4" />
               Export Report
             </button>
@@ -143,7 +159,7 @@ const AttendanceManagement = () => {
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Today
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -296,7 +312,10 @@ const AttendanceManagement = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredAttendance.map((record) => (
-                  <tr key={record.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={record.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
@@ -328,11 +347,14 @@ const AttendanceManagement = () => {
                       <div className="flex justify-center gap-2">
                         {/* Present Button */}
                         <button
-                          onClick={() => handleVerifyAttendance(record.id, "present")}
-                          className={`p-2 rounded-lg transition-all duration-200 ${record.status === "present"
-                            ? "bg-green-100 text-green-700 ring-2 ring-green-500 ring-opacity-50"
-                            : "bg-gray-100 text-gray-400 hover:bg-green-50 hover:text-green-600"
-                            }`}
+                          onClick={() =>
+                            handleVerifyAttendance(record.id, "present")
+                          }
+                          className={`p-2 rounded-lg transition-all duration-200 ${
+                            record.status === "present"
+                              ? "bg-green-100 text-green-700 ring-2 ring-green-500 ring-opacity-50"
+                              : "bg-gray-100 text-gray-400 hover:bg-green-50 hover:text-green-600"
+                          }`}
                           title="Mark Present"
                         >
                           <CheckCircle className="w-5 h-5" />
@@ -340,11 +362,14 @@ const AttendanceManagement = () => {
 
                         {/* Absent Button */}
                         <button
-                          onClick={() => handleVerifyAttendance(record.id, "absent")}
-                          className={`p-2 rounded-lg transition-all duration-200 ${record.status === "absent"
-                            ? "bg-red-100 text-red-700 ring-2 ring-red-500 ring-opacity-50"
-                            : "bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                            }`}
+                          onClick={() =>
+                            handleVerifyAttendance(record.id, "absent")
+                          }
+                          className={`p-2 rounded-lg transition-all duration-200 ${
+                            record.status === "absent"
+                              ? "bg-red-100 text-red-700 ring-2 ring-red-500 ring-opacity-50"
+                              : "bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                          }`}
                           title="Mark Absent"
                         >
                           <XCircle className="w-5 h-5" />
@@ -352,11 +377,14 @@ const AttendanceManagement = () => {
 
                         {/* Late Button */}
                         <button
-                          onClick={() => handleVerifyAttendance(record.id, "late")}
-                          className={`p-2 rounded-lg transition-all duration-200 ${record.status === "late"
-                            ? "bg-yellow-100 text-yellow-700 ring-2 ring-yellow-500 ring-opacity-50"
-                            : "bg-gray-100 text-gray-400 hover:bg-yellow-50 hover:text-yellow-600"
-                            }`}
+                          onClick={() =>
+                            handleVerifyAttendance(record.id, "late")
+                          }
+                          className={`p-2 rounded-lg transition-all duration-200 ${
+                            record.status === "late"
+                              ? "bg-yellow-100 text-yellow-700 ring-2 ring-yellow-500 ring-opacity-50"
+                              : "bg-gray-100 text-gray-400 hover:bg-yellow-50 hover:text-yellow-600"
+                          }`}
                           title="Mark Late"
                         >
                           <Clock className="w-5 h-5" />
@@ -365,14 +393,16 @@ const AttendanceManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${record.status === "present"
-                          ? "bg-green-100 text-green-800"
-                          : record.status === "absent"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
-                          }`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          record.status === "present"
+                            ? "bg-green-100 text-green-800"
+                            : record.status === "absent"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
+                        }`}
                       >
-                        {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                        {record.status.charAt(0).toUpperCase() +
+                          record.status.slice(1)}
                       </span>
                     </td>
                   </tr>
@@ -384,7 +414,9 @@ const AttendanceManagement = () => {
           {filteredAttendance.length === 0 && (
             <div className="text-center py-12">
               <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No attendance records found</p>
+              <p className="text-gray-500 text-lg">
+                No attendance records found
+              </p>
               <p className="text-gray-400 text-sm">
                 Try adjusting your search or classroom filter
               </p>

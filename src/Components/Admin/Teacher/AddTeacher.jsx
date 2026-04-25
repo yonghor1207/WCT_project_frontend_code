@@ -5,7 +5,7 @@ import {
   useCreateUserMutation,
   useUpdateUserMutation,
   useGetUserQuery,
-  useGetUserByIdQuery
+  useGetUserByIdQuery,
 } from "../../../redux/hooks/userApiSlice";
 import { data, useNavigate, useParams } from "react-router-dom";
 
@@ -24,13 +24,13 @@ const AddTeacher = () => {
     gender: "",
     password: "",
     role: "teacher",
-    status: 1
+    status: 1,
   });
 
   const [createUser] = useCreateUserMutation();
   const [updateUser] = useUpdateUserMutation();
   const { refetch } = useGetUserQuery();
-  const { data: existingTeacher } = useGetUserByIdQuery(id)
+  const { data: existingTeacher } = useGetUserByIdQuery(id);
 
   console.log("exist teacher:", existingTeacher);
 
@@ -46,16 +46,16 @@ const AddTeacher = () => {
         gender: existingTeacher.data.gender || "",
         password: existingTeacher.data.password || "",
         role: existingTeacher.data.role || "teacher",
-        status: existingTeacher.data.status || 1
+        status: existingTeacher.data.status || 1,
       });
     }
   }, [id, existingTeacher]);
 
   const validate = () => {
     const errors = {};
-    if (!formData.first_name) errors.first_name = 'First Name is required';
-    if (!formData.last_name) errors.last_name = 'Last Name is required';
-    if (!formData.email) errors.email = 'Email is required';
+    if (!formData.first_name) errors.first_name = "First Name is required";
+    if (!formData.last_name) errors.last_name = "Last Name is required";
+    if (!formData.email) errors.email = "Email is required";
     return errors;
   };
 
@@ -68,7 +68,7 @@ const AddTeacher = () => {
   };
 
   const cancel = () => {
-    navigate('/teacher');
+    navigate("/teacher");
   };
 
   const handleSubmit = async (e) => {
@@ -87,23 +87,27 @@ const AddTeacher = () => {
         // Add the generated password to the formData
         const updatedFormData = {
           ...formData,
-          password: generatedPassword
+          password: generatedPassword,
         };
         await updateUser({ id, data: updatedFormData }).unwrap();
-        toast.success('Teacher updated successfully!');
+        toast.success("Teacher updated successfully!");
       } else {
         const data = {
           ...formData,
-          password: `${formData.first_name}${formData.last_name}-lms2025`
+          password: `${formData.first_name}${formData.last_name}-lms2025`,
         };
         await createUser(data).unwrap();
-        toast.success('Teacher created successfully!');
+        toast.success("Teacher created successfully!");
       }
 
       await refetch();
-      navigate('/teacher');
+      navigate("/teacher");
     } catch (error) {
-      toast.error(error.data?.message || error.data || 'An error occurred. Please try again.');
+      toast.error(
+        error.data?.message ||
+          error.data ||
+          "An error occurred. Please try again.",
+      );
     }
   };
 
@@ -122,7 +126,7 @@ const AddTeacher = () => {
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {isEditMode ? 'Edit Teacher' : 'Add New Teacher'}
+                  {isEditMode ? "Edit Teacher" : "Add New Teacher"}
                 </h2>
               </div>
             </div>
@@ -141,7 +145,7 @@ const AddTeacher = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
                       <label className="block text-sm text-start font-medium text-gray-700 mb-2">
-                        First Name {!isEditMode && '*'}
+                        First Name {!isEditMode && "*"}
                       </label>
                       <input
                         type="text"
@@ -149,16 +153,18 @@ const AddTeacher = () => {
                         value={formData.first_name}
                         onChange={handleInputChange}
                         placeholder="Enter first name..."
-                        className={`w-full px-3 py-2 border ${errors.first_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                        className={`w-full px-3 py-2 border ${errors.first_name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
                         required={!isEditMode}
                       />
                       {errors.first_name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.first_name}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.first_name}
+                        </p>
                       )}
                     </div>
                     <div>
                       <label className="block text-start text-sm font-medium text-gray-700 mb-2">
-                        Last Name {!isEditMode && '*'}
+                        Last Name {!isEditMode && "*"}
                       </label>
                       <input
                         type="text"
@@ -166,16 +172,18 @@ const AddTeacher = () => {
                         value={formData.last_name}
                         onChange={handleInputChange}
                         placeholder="Enter last name..."
-                        className={`w-full px-3 py-2 border ${errors.last_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                        className={`w-full px-3 py-2 border ${errors.last_name ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
                         required={!isEditMode}
                       />
                       {errors.last_name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.last_name}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.last_name}
+                        </p>
                       )}
                     </div>
                     <div>
                       <label className="block text-start text-sm font-medium text-gray-700 mb-2">
-                        Email {!isEditMode && '*'}
+                        Email {!isEditMode && "*"}
                       </label>
                       <input
                         type="email"
@@ -183,12 +191,14 @@ const AddTeacher = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="Enter email address..."
-                        className={`w-full px-3 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                        className={`w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
                         required={!isEditMode}
                         disabled={isEditMode}
                       />
                       {errors.email && (
-                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.email}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -253,7 +263,7 @@ const AddTeacher = () => {
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
-                  {isEditMode ? 'Update' : 'Submit'}
+                  {isEditMode ? "Update" : "Submit"}
                 </button>
               </div>
             </form>

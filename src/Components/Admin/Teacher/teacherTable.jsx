@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Filter } from "lucide-react";
 import TeacherTableComponent from "./TeacherTableComponent";
 import { useNavigate } from "react-router-dom";
-import { useDeactivateUserMutation, useGetUserByIdQuery, useGetUserQuery } from "../../../redux/hooks/userApiSlice";
+import {
+  useDeactivateUserMutation,
+  useGetUserByIdQuery,
+  useGetUserQuery,
+} from "../../../redux/hooks/userApiSlice";
 import { toast } from "react-toastify";
 
 const TeacherTable = () => {
@@ -18,20 +22,22 @@ const TeacherTable = () => {
     if (teacherData?.data?.data) {
       // Filter users with role === 'teacher'
       const teachersOnly = teacherData.data.data.filter(
-        (user) => user.role === "teacher"
+        (user) => user.role === "teacher",
       );
       setTeachers(teachersOnly);
     }
   }, [teacherData]);
 
-
   const filteredTeachers = Array.isArray(teachers)
-    ? teachers.filter((teacher) =>
-      `${teacher.first_name ?? ""} ${teacher.last_name ?? ""}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (teacher.email ?? "").toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    ? teachers.filter(
+        (teacher) =>
+          `${teacher.first_name ?? ""} ${teacher.last_name ?? ""}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          (teacher.email ?? "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()),
+      )
     : [];
 
   const handleEdit = (teacher) => {
@@ -39,9 +45,7 @@ const TeacherTable = () => {
     navigate(`${teacher.id}`);
   };
 
-
   const [deactivateUser] = useDeactivateUserMutation();
-
 
   const handleToggleStatus = async (teacherId) => {
     setSelectedTeacher(teacherId);
@@ -55,8 +59,8 @@ const TeacherTable = () => {
       await deactivateUser(teacherId).unwrap();
       await refetch();
       toast.success("Deactivate successfully!", {
-        position: "top-right"
-      })
+        position: "top-right",
+      });
       // navigate("/teacher");
     } catch (error) {
       toast.error("Deactivate not successfull!");
@@ -69,7 +73,7 @@ const TeacherTable = () => {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div> 
       <div className="mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -77,7 +81,9 @@ const TeacherTable = () => {
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Teacher Management
             </h1>
-            <p className="text-gray-600">Manage your teaching staff efficiently</p>
+            <p className="text-gray-600">
+              Manage your teaching staff efficiently
+            </p>
           </div>
           <button
             onClick={addNew}
@@ -100,10 +106,10 @@ const TeacherTable = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          {/* <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
             <Filter className="w-4 h-4" />
             Filters
-          </button>
+          </button> */}
         </div>
 
         {/* Statistics */}
@@ -117,9 +123,8 @@ const TeacherTable = () => {
           <div className="bg-white p-4 rounded-lg border border-gray-200">
             <div className="text-2xl font-bold text-green-600">
               {
-                teachers.filter(
-                  (t) => t.status === "active" || t.status === 1
-                ).length
+                teachers.filter((t) => t.status === "active" || t.status === 1)
+                  .length
               }
             </div>
             <div className="text-sm text-gray-600">Active Teachers</div>
@@ -128,7 +133,7 @@ const TeacherTable = () => {
             <div className="text-2xl font-bold text-red-600">
               {
                 teachers.filter(
-                  (t) => t.status === "inactive" || t.status === 0
+                  (t) => t.status === "inactive" || t.status === 0,
                 ).length
               }
             </div>
