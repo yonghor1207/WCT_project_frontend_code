@@ -46,7 +46,13 @@ const Layout = () => {
       id: "dashboard",
       label: "Dashboard",
       icon: <LayoutDashboard size={20} />,
-      path: "/",
+      path: "/dashboard",
+    },
+    {
+      id: "approvals",
+      label: "Pending Approvals",
+      icon: <ClipboardCheck size={20} />,
+      path: "/pending-approvals",
     },
     {
       id: "teacher",

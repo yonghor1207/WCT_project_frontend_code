@@ -4,6 +4,7 @@ import SignUp from "./Pages/Auth/SignUp";
 import Landing from "./Pages/Landing";
 import AdminLayout from "./Components/Admin/AdminLayout";
 import Dashboard from "./Pages/Admin/Dashboard";
+import PendingApprovals from "./Pages/Admin/PendingApprovals";
 import Teacher from "./Pages/Admin/Teacher";
 import Student from "./Pages/Admin/Student";
 import Attendance from "./Pages/Admin/Attendacne";
@@ -24,6 +25,14 @@ import AddPayment from "./Components/Admin/Payment/AddPayment";
 import AddEditAttendance from "./Components/Admin/Attendance/AddAttendance";
 import AddAttendance from "./Components/Admin/Attendance/AddAttendance";
 
+// Teacher imports
+import TeacherLayout from "./Components/Teacher/TeacherLayout";
+import TeacherDashboard from "./Pages/Teacher/Dashboard";
+
+// Student imports
+import StudentLayoutWrapper from "./Components/Student/StudentLayoutWrapper";
+import StudentDashboard from "./Pages/Student/Dashboard";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,7 +41,7 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -44,9 +53,23 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/pending-approvals",
+    element: (
+      <ProtectedRoute allowedRoles={["admin"]}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <PendingApprovals />,
+      },
+    ],
+  },
+  {
     path: "/teacher",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -68,7 +91,7 @@ const router = createBrowserRouter([
   {
     path: "/student",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -90,7 +113,7 @@ const router = createBrowserRouter([
   {
     path: "/attendance",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -108,7 +131,7 @@ const router = createBrowserRouter([
   {
     path: "/payment",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -130,7 +153,7 @@ const router = createBrowserRouter([
   {
     path: "/classroom",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -152,7 +175,7 @@ const router = createBrowserRouter([
   {
     path: "/course",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -179,20 +202,36 @@ const router = createBrowserRouter([
     path: "/signup",
     element: <SignUp />,
   },
-  // {
-  //   path: "/students/*",
-  //   element: <StudentLayout />,
-  //   children: [
-  //     {
-  //       path: "homepage",
-  //       element: <HomePage />,
-  //     },
-  //     {
-  //       path: "mycourses",
-  //       element: <MyCourse />,
-  //     },
-  //   ],
-  // },
+  // Teacher Routes
+  {
+    path: "/teacher-dashboard",
+    element: (
+      <ProtectedRoute allowedRoles={["teacher"]}>
+        <TeacherLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <TeacherDashboard />,
+      },
+    ],
+  },
+  // Student Routes
+  {
+    path: "/student-dashboard",
+    element: (
+      <ProtectedRoute allowedRoles={["student"]}>
+        <StudentLayoutWrapper />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <StudentDashboard />,
+      },
+    ],
+  },
 ]);
 
 export default router;
