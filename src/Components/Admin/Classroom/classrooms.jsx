@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useGetClassroomQuery } from "../../../redux/hooks/classroomApiSlice";
+import { useGetClassroomQuery, useDeleteClassroomMutation } from "../../../redux/hooks/classroomApiSlice";
 import ClassroomTableComponent from "./ClassroomTableComponent";
 
 const Classrooms = () => {
@@ -11,6 +11,7 @@ const Classrooms = () => {
     const navigate = useNavigate();
 
     const { data: classroomData, isLoading, refetch } = useGetClassroomQuery();
+    const [deleteClassroom] = useDeleteClassroomMutation();
     const [classrooms, setClassrooms] = useState([]);
 
     console.log("classroom data", classroomData);
@@ -33,6 +34,23 @@ const Classrooms = () => {
     const handleEdit = (classroom) => {
         console.log("Edit classroom:", classroom.id);
         navigate(`${classroom.id}`);
+    };
+
+    const handleDelete = async (classroomId) => {
+        if (window.confirm("Are you sure you want to delete this classroom? This action cannot be undone.")) {
+            try {
+                await deleteClassroom(classroomId).unwrap();
+                await refetch();
+                toast.success("Classroom deleted successfully!", {
+                    position: "top-right"
+                });
+            } catch (error) {
+                console.error("Failed to delete classroom:", error);
+                toast.error(error?.data?.message || "Failed to delete classroom. Please try again.", {
+                    position: "top-right"
+                });
+            }
+        }
     };
 
     const addNew = () => {
@@ -84,6 +102,7 @@ const Classrooms = () => {
                     <ClassroomTableComponent
                         classrooms={filteredClassroom}
                         onEdit={handleEdit}
+                        onDelete={handleDelete}
                     />
                 )}
             </div>

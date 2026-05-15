@@ -35,6 +35,13 @@ export const classroomApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Classroom']
         }),
+        deleteClassroom: builder.mutation({
+            query: (id) => ({
+                url: `${BASE_ADMIN_URL}/classrooms/${id}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ['Classroom']
+        }),
     })
 })
 
@@ -43,4 +50,5 @@ export const {
     useCreateClassroomMutation,
     useGetClassroomByIdQuery,
     useUpdateClassroomMutation,
+    useDeleteClassroomMutation,
 } = classroomApiSlice;

@@ -6,6 +6,7 @@ import {
   useDeactivateUserMutation,
   useGetUserByIdQuery,
   useGetUserQuery,
+  useDeleteUserMutation,
 } from "../../../redux/hooks/userApiSlice";
 import { toast } from "react-toastify";
 
@@ -46,6 +47,7 @@ const TeacherTable = () => {
   };
 
   const [deactivateUser] = useDeactivateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
   const handleToggleStatus = async (teacherId) => {
     setSelectedTeacher(teacherId);
@@ -65,6 +67,32 @@ const TeacherTable = () => {
     } catch (error) {
       toast.error("Deactivate not successfull!");
       console.error("Failed to toggle teacher status:", error);
+    }
+  };
+
+  const handleDelete = async (teacherId) => {
+    if (window.confirm("Are you sure you want to delete this teacher? This action cannot be undone.")) {
+      try {
+        await deleteUser(teacherId).unwrap();
+        await refetch();
+        toast.success("Teacher deleted successfully!", {
+          position: "top-right"
+        });
+      } catch (error) {
+        console.error("Failed to delete teacher:", error);
+        
+        // Check if it's a 404 or endpoint not found error
+        if (error?.status === 404 || error?.status === 405) {
+          toast.error("Delete feature is not available yet. Please contact your administrator.", {
+            position: "top-right",
+            autoClose: 5000
+          });
+        } else {
+          toast.error(error?.data?.message || "Failed to delete teacher. Please try again.", {
+            position: "top-right"
+          });
+        }
+      }
     }
   };
 
@@ -149,6 +177,7 @@ const TeacherTable = () => {
             teachers={filteredTeachers}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
+            onDelete={handleDelete}
           />
         )}
       </div>

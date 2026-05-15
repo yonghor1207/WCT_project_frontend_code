@@ -44,6 +44,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 credentials: 'include'
             }),
             invalidatesTags: ['User']
+        }),
+
+        deleteUser: builder.mutation({
+            query: (id) => ({
+                url: `${BASE_ADMIN_URL}/users/${id}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ['User']
+        }),
+
+        updatePaymentStatus: builder.mutation({
+            query: ({ id, payment_status }) => ({
+                url: `${BASE_ADMIN_URL}/users/${id}/payment-status`,
+                method: "PATCH",
+                body: { payment_status }
+            }),
+            invalidatesTags: ['User']
         })
     })
 })
@@ -53,5 +70,7 @@ export const {
     useCreateUserMutation,
     useGetUserByIdQuery,
     useDeactivateUserMutation,
-    useUpdateUserMutation
+    useUpdateUserMutation,
+    useDeleteUserMutation,
+    useUpdatePaymentStatusMutation
 } = userApiSlice;

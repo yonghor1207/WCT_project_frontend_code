@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDeactivateUserMutation, useGetUserQuery } from "../../../redux/hooks/userApiSlice";
+import { useDeactivateUserMutation, useGetUserQuery, useDeleteUserMutation } from "../../../redux/hooks/userApiSlice";
 import { toast } from "react-toastify";
 import StudentTableComponent from "./StudentTableComponent";
 
@@ -41,6 +41,7 @@ const studentTable = () => {
 
 
   const [deactivateUser] = useDeactivateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
 
   const handleToggleStatus = async (teacherId) => {
@@ -61,6 +62,32 @@ const studentTable = () => {
     } catch (error) {
       toast.error("Deactivate not successfull!");
       console.error("Failed to toggle teacher status:", error);
+    }
+  };
+
+  const handleDelete = async (studentId) => {
+    if (window.confirm("Are you sure you want to delete this student? This action cannot be undone.")) {
+      try {
+        await deleteUser(studentId).unwrap();
+        await refetch();
+        toast.success("Student deleted successfully!", {
+          position: "top-right"
+        });
+      } catch (error) {
+        console.error("Failed to delete student:", error);
+        
+        // Check if it's a 404 or endpoint not found error
+        if (error?.status === 404 || error?.status === 405) {
+          toast.error("Delete feature is not available yet. Please contact your administrator.", {
+            position: "top-right",
+            autoClose: 5000
+          });
+        } else {
+          toast.error(error?.data?.message || "Failed to delete student. Please try again.", {
+            position: "top-right"
+          });
+        }
+      }
     }
   };
 
@@ -144,6 +171,7 @@ const studentTable = () => {
             students={filteredStudents}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
+            onDelete={handleDelete}
           />
         )}
       </div>

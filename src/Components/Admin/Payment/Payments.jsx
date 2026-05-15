@@ -1,137 +1,215 @@
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Search, Filter, BookOpen, GraduationCap, CheckCircle, XCircle, DollarSign } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 import { toast } from "react-toastify";
-import { useDeactivatedCourseMutation, useGetCourseQuery } from "../../../redux/hooks/courseApiSlice";
 import PaymentTableComponent from "./PaymentTableComponent";
-import StatCard from "../Courses/StatCard";
-import { useGetPaymentQuery, useVerifyPaymentMutation } from "../../../redux/hooks/paymentApiSlice";
+import { useGetUserQuery, useDeleteUserMutation, useUpdatePaymentStatusMutation, useUpdateUserMutation } from "../../../redux/hooks/userApiSlice";
 
 const Payments = () => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedPayment, setSelectedPayment] = useState(null);
-    const navigate = useNavigate();
+    const [statusFilter, setStatusFilter] = useState("all");
 
-    const { data: paymentData, isLoading, refetch } = useGetPaymentQuery();
-    const [payments, setPayments] = useState([]);
-    console.log("payment data:", paymentData?.data);
+    const { data: userData, isLoading, refetch } = useGetUserQuery();
+    const [deleteUser] = useDeleteUserMutation();
+    const [updatePaymentStatus] = useUpdatePaymentStatusMutation();
+    const [updateUser] = useUpdateUserMutation();
+    const [students, setStudents] = useState([]);
+
+    console.log("userData:", userData);
+
     useEffect(() => {
-        if (paymentData?.data) {
-            setPayments(paymentData.data);
+        if (userData?.data?.data) {
+            // Filter users with role === 'student'
+            const studentOnly = userData.data.data.filter(
+                (user) => user.role === "student"
+            );
+            setStudents(studentOnly);
         }
-    }, [paymentData]);
+    }, [userData]);
 
-    const filteredPayments = Array.isArray(payments)
-        ? payments.filter((payment) => // Fixed typo in variable name (was courese)
-            `${payment.amount ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            `${payment.student?.first_name ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            `${payment.student?.last_name ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        : [];
+    const filteredStudents = useMemo(() => {
+        if (!Array.isArray(students)) return [];
+        
+        return students.filter((student) => {
+            const matchesSearch = 
+                `${student.first_name ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                `${student.last_name ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                `${student.email ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                `${student.department ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                `${student.class ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const handleEdit = (payment) => { // Fixed typo in parameter name
-        console.log("payment id:", payment.id);
-        navigate(`${payment.id}`);
-    };
+            const matchesStatus = statusFilter === "all" || student.payment_status === statusFilter;
 
-    const totalPayments = useMemo(() =>
-        payments
-            .filter(payment => payment.status === 'paid')
-            .reduce((total, payment) => total + (Number(payment.amount) || 0), 0),
-        [payments]
-    );
+            return matchesSearch && matchesStatus;
+        });
+    }, [students, searchTerm, statusFilter]);
 
-
-    const [verifyPayment] = useVerifyPaymentMutation();
-
-    const handleToggleStatus = async (paymentID) => {
-        setSelectedPayment(paymentID); // Changed from setSelectedStudent
+    const handleStatusChange = async (studentId, newStatus) => {
         try {
-            if (!paymentID) {
-                toast.error("Course not found");
-                return;
-            }
-            await verifyPayment(paymentID).unwrap();
+            await updatePaymentStatus({ id: studentId, payment_status: newStatus }).unwrap();
             await refetch();
-            toast.success("Status updated successfully!", {
+            toast.success("Payment status updated successfully!", {
                 position: "top-right"
             });
         } catch (error) {
             toast.error("Failed to update payment status!");
-            console.error("Failed to toggle payment status:", error);
+            console.error("Failed to update payment status:", error);
         }
     };
 
-    const addNew = () => {
-        navigate("createPayment"); // Changed from createStudent
+    const handleClassChange = async (studentId, newClass) => {
+        // Optimistic update
+        setStudents(prevStudents => 
+            prevStudents.map(student => 
+                student.id === studentId ? { ...student, class: newClass } : student
+            )
+        );
+
+        try {
+            await updateUser({ id: studentId, data: { class: newClass } }).unwrap();
+            await refetch();
+            toast.success("Class updated successfully!", {
+                position: "top-right"
+            });
+        } catch (error) {
+            // Revert on error
+            await refetch();
+            toast.error("Failed to update class!");
+            console.error("Failed to update class:", error);
+        }
+    };
+
+    const handleYearChange = async (studentId, newYear) => {
+        // Optimistic update
+        setStudents(prevStudents => 
+            prevStudents.map(student => 
+                student.id === studentId ? { ...student, year: newYear } : student
+            )
+        );
+
+        try {
+            await updateUser({ id: studentId, data: { year: newYear } }).unwrap();
+            await refetch();
+            toast.success("Year updated successfully!", {
+                position: "top-right"
+            });
+        } catch (error) {
+            // Revert on error
+            await refetch();
+            toast.error("Failed to update year!");
+            console.error("Failed to update year:", error);
+        }
+    };
+
+    const handleDelete = async (studentId) => {
+        if (!window.confirm("Are you sure you want to delete this student?")) {
+            return;
+        }
+
+        try {
+            await deleteUser(studentId).unwrap();
+            await refetch();
+            toast.success("Student deleted successfully!", {
+                position: "top-right"
+            });
+        } catch (error) {
+            toast.error("Failed to delete student!");
+            console.error("Failed to delete student:", error);
+        }
     };
 
     return (
-        <div >
+        <div>
             <div className="mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
-                            Payment Management
-                        </h1>
-                        <p className="text-gray-600">Manage your payments efficiently</p>
-                    </div>
-                    <button
-                        onClick={addNew}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Add Payment
-                    </button>
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        Student Payment Management
+                    </h1>
+                    <p className="text-gray-600">View and manage student payment status</p>
                 </div>
 
-                {/* Search and Filters */}
+                {/* Search and Status Filters */}
                 <div className="flex items-center gap-4 mb-6">
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                             type="text"
-                            placeholder="Search payments by name or teacher..."
+                            placeholder="Search by name, email, department, class..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
-                    {/* <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <Filter className="w-4 h-4" />
-                        Filters
-                    </button> */}
+                    
+                    {/* Status Filter Buttons */}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setStatusFilter("all")}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                statusFilter === "all"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter("paid_1_semester")}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                statusFilter === "paid_1_semester"
+                                    ? "bg-green-600 text-white"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                        >
+                            Paid 1 Sem
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter("paid_2_semester")}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                statusFilter === "paid_2_semester"
+                                    ? "bg-green-700 text-white"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                        >
+                            Paid 2 Sem
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter("pending")}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                statusFilter === "pending"
+                                    ? "bg-yellow-600 text-white"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                        >
+                            Pending
+                        </button>
+                        <button
+                            onClick={() => setStatusFilter("not_yet")}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                statusFilter === "not_yet"
+                                    ? "bg-red-600 text-white"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                        >
+                            Not Yet
+                        </button>
+                    </div>
                 </div>
 
-                {/* Statistics */}
-                <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4 mb-6">
-                    <StatCard
-                        title={"Total Payments"}
-                        color={"bg-blue-500"}
-                        value={Number(totalPayments)}
-                        icon={DollarSign}
-                    />
-                    <StatCard
-                        title={"Total Student"}
-                        color={"bg-purple-500"}
-                        value={[...new Set(payments.map(payment => payment.student?.id))].length}
-                        icon={GraduationCap}
-                    />
-                </div>
-
-                {/* Course Table */}
+                {/* Student Table */}
                 {isLoading ? (
                     <div className="text-center py-20 text-gray-500">Loading...</div>
-                ) : filteredPayments.length === 0 ? (
+                ) : filteredStudents.length === 0 ? (
                     <div className="text-center py-20 text-gray-500">
-                        {searchTerm ? "No matching payments found" : "No payments available"}
+                        {searchTerm || statusFilter !== "all" ? "No matching students found" : "No students available"}
                     </div>
                 ) : (
                     <PaymentTableComponent
-                        payments={filteredPayments}
-                        onEdit={handleEdit}
-                        onToggleStatus={handleToggleStatus}
+                        students={filteredStudents}
+                        onDelete={handleDelete}
+                        onStatusChange={handleStatusChange}
+                        onClassChange={handleClassChange}
+                        onYearChange={handleYearChange}
                     />
                 )}
             </div>

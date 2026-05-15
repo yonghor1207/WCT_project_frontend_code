@@ -1,25 +1,31 @@
-import { Edit3, UserCheck, UserX, User, CheckCircle, XCircle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 const PaymentTableComponent = ({
-    payments,
-    onEdit,
-    onToggleStatus,
+    students,
+    onDelete,
+    onStatusChange,
+    onClassChange,
+    onYearChange,
 }) => {
-
-
-    const getStatusBadge = (status) => {
-        const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
+    const getSelectClass = (status) => {
+        const baseClasses = "px-3 py-1 rounded-full text-xs font-medium border-0 cursor-pointer focus:ring-2 focus:ring-offset-1";
         switch (status) {
-            case "paid":
-                return `${baseClasses} bg-green-100 text-green-800`;
+            case "paid_1_semester":
+            case "paid_2_semester":
+                return `${baseClasses} bg-green-100 text-green-800 focus:ring-green-500`;
             case "pending":
-                return `${baseClasses} bg-yellow-100 text-yellow-800`;
-            case "Failed":
-                return `${baseClasses} bg-red-100 text-red-800`;
+                return `${baseClasses} bg-yellow-100 text-yellow-800 focus:ring-yellow-500`;
+            case "not_yet":
+                return `${baseClasses} bg-red-100 text-red-800 focus:ring-red-500`;
             default:
-                return baseClasses;
+                return `${baseClasses} bg-gray-100 text-gray-800 focus:ring-gray-500`;
         }
     };
+
+    const getBasicSelectClass = () => {
+        return "px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer";
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
@@ -27,63 +33,77 @@ const PaymentTableComponent = ({
                     {/* Header */}
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Transaction ID</th>
-                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Student Name</th>
-                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Amount</th>
-                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Payment Type</th>
-                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Payment Method</th>
+                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Name</th>
+                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Class</th>
+                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Year</th>
                             <th className="text-left py-4 px-6 font-semibold text-gray-900">Status</th>
-                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Actions</th>
+                            <th className="text-left py-4 px-6 font-semibold text-gray-900">Action</th>
                         </tr>
                     </thead>
 
                     {/* List */}
                     <tbody className="divide-y divide-gray-200">
-                        {payments.map((payment) => {
-                            const isPaid = payment.status === "paid";
-
-                            return (
-                                <tr key={payment.id} className="hover:bg-gray-50 transition-colors text-start">
-
-                                    <td className="py-4 px-6 text-gray-700 text-start font-semibold">{payment.transaction_id}</td>
-                                    <td className="py-4 px-6 text-gray-700">{`${payment.student?.first_name} ${payment.student?.last_name}`}</td>
-                                    <td className="py-4 px-6 text-blue-600 text-start">${payment.amount}</td>
-                                    <td className="py-4 px-6 text-blue-600 text-start capitalize">{payment.payment_type}</td>
-                                    <td className="py-4 px-6 text-blue-600 text-start uppercase">{payment.payment_method}</td>
-                                    <td className="py-4 px-6">
-                                        <span
-                                            className={getStatusBadge(payment.status)}
-                                        >
-                                            {payment.status}
+                        {students.map((student) => (
+                            <tr key={student.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="py-4 px-6">
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-900 font-medium">
+                                            {`${student.first_name} ${student.last_name}`}
                                         </span>
-                                    </td>
-                                    <td className="py-4 px-6">
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => onEdit(payment)}
-                                                className="p-2 text-gid: 6, firstName: 'Sarah', lastName: 'Miller', grade: '11th', rolray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                                                title="Edit payment"
-                                            >
-                                                <Edit3 className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => onToggleStatus(payment.id)}
-                                                className={`p-2 rounded-lg transition-colors ${isPaid
-                                                    ? "text-red-600 hover:bg-red-50"
-                                                    : "text-green-600 hover:bg-green-50"
-                                                    }`}
-                                            >
-                                                {isPaid ? (
-                                                    <XCircle className="w-4 h-4" />
-                                                ) : (
-                                                    <CheckCircle className="w-4 h-4" />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                                        <span className="text-sm text-gray-500">
+                                            {student.email}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <select
+                                        value={student.class || ""}
+                                        onChange={(e) => onClassChange(student.id, e.target.value)}
+                                        className={getBasicSelectClass()}
+                                    >
+                                        <option value="">Select</option>
+                                        <option value="M1">M1</option>
+                                        <option value="M2">M2</option>
+                                        <option value="M3">M3</option>
+                                        <option value="M4">M4</option>
+                                    </select>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <select
+                                        value={student.year || ""}
+                                        onChange={(e) => onYearChange(student.id, e.target.value)}
+                                        className={getBasicSelectClass()}
+                                    >
+                                        <option value="">Select</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                    </select>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <select
+                                        value={student.payment_status || "not_yet"}
+                                        onChange={(e) => onStatusChange(student.id, e.target.value)}
+                                        className={getSelectClass(student.payment_status)}
+                                    >
+                                        <option value="paid_1_semester">Paid 1 Semester</option>
+                                        <option value="paid_2_semester">Paid 2 Semester</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="not_yet">Not Yet</option>
+                                    </select>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <button
+                                        onClick={() => onDelete(student.id)}
+                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        title="Delete student"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

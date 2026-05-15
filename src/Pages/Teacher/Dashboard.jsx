@@ -1,8 +1,32 @@
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { BookOpen, Users, Calendar, ClipboardCheck } from "lucide-react";
+import { useGetCourseQuery } from "../../redux/hooks/courseApiSlice";
+import { useGetUserQuery } from "../../redux/hooks/userApiSlice";
+import { useGetAttendanceQuery } from "../../redux/hooks/attendaceApiSlice";
 
 const TeacherDashboard = () => {
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  
+  // Fetch data from APIs
+  const { data: coursesResponse } = useGetCourseQuery();
+  const { data: usersResponse } = useGetUserQuery();
+  const { data: attendanceResponse } = useGetAttendanceQuery();
+
+  const courses = coursesResponse?.data?.data || coursesResponse?.data || [];
+  const allUsers = usersResponse?.data?.data || usersResponse?.data || [];
+  const attendanceRecords = attendanceResponse?.data || [];
+
+  // Get students (users with role 'student')
+  const students = Array.isArray(allUsers) ? allUsers.filter(user => user.role === 'student') : [];
+
+  const totalCourses = Array.isArray(courses) ? courses.length : 0;
+  const totalStudents = students.length;
+  const classesToday = 0;
+
+  // Today's schedule - empty until schedule API is available
+  const todaySchedule = [];
 
   return (
     <div className="p-6">
@@ -14,74 +38,63 @@ const TeacherDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <StatCard
           icon={<BookOpen className="w-8 h-8 text-blue-600" />}
           title="My Courses"
-          value="5"
+          value={totalCourses}
           bgColor="bg-blue-50"
+          onClick={() => navigate('/teacher/courses')}
+          clickable
         />
         <StatCard
           icon={<Users className="w-8 h-8 text-green-600" />}
           title="Total Students"
-          value="120"
+          value={totalStudents}
           bgColor="bg-green-50"
+          onClick={() => navigate('/teacher/students')}
+          clickable
         />
         <StatCard
           icon={<Calendar className="w-8 h-8 text-purple-600" />}
           title="Classes Today"
-          value="3"
+          value={classesToday}
           bgColor="bg-purple-50"
+          onClick={() => navigate('/teacher/schedule')}
+          clickable
         />
-        <StatCard
-          icon={<ClipboardCheck className="w-8 h-8 text-orange-600" />}
-          title="Pending Attendance"
-          value="2"
-          bgColor="bg-orange-50"
-        />
-      </div>
-
-      {/* Today's Schedule */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Today's Schedule</h2>
-        <div className="space-y-4">
-          <ScheduleItem
-            time="09:00 AM - 10:30 AM"
-            course="Mathematics 101"
-            classroom="Room 201"
-            students="30 students"
-          />
-          <ScheduleItem
-            time="11:00 AM - 12:30 PM"
-            course="Advanced Calculus"
-            classroom="Room 305"
-            students="25 students"
-          />
-          <ScheduleItem
-            time="02:00 PM - 03:30 PM"
-            course="Statistics"
-            classroom="Room 201"
-            students="28 students"
-          />
-        </div>
       </div>
 
       {/* Quick Actions */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <ActionButton title="Mark Attendance" icon={<ClipboardCheck className="w-5 h-5" />} />
-          <ActionButton title="View My Courses" icon={<BookOpen className="w-5 h-5" />} />
-          <ActionButton title="View Students" icon={<Users className="w-5 h-5" />} />
+          <ActionButton 
+            title="Mark Attendance" 
+            icon={<ClipboardCheck className="w-5 h-5" />} 
+            onClick={() => navigate('/teacher/attendance')}
+          />
+          <ActionButton 
+            title="View My Courses" 
+            icon={<BookOpen className="w-5 h-5" />} 
+            onClick={() => navigate('/teacher/courses')}
+          />
+          <ActionButton 
+            title="View Students" 
+            icon={<Users className="w-5 h-5" />} 
+            onClick={() => navigate('/teacher/students')}
+          />
         </div>
       </div>
     </div>
   );
 };
 
-const StatCard = ({ icon, title, value, bgColor }) => {
+const StatCard = ({ icon, title, value, bgColor, onClick, clickable }) => {
+  const cardClasses = `${bgColor} rounded-lg p-6 ${clickable ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`;
+  
   return (
-    <div className={`${bgColor} rounded-lg p-6`}>
+    <div className={cardClasses} onClick={clickable ? onClick : undefined}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-gray-600 text-sm font-medium">{title}</p>
@@ -89,6 +102,11 @@ const StatCard = ({ icon, title, value, bgColor }) => {
         </div>
         <div>{icon}</div>
       </div>
+      {clickable && (
+        <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+          Click to view details →
+        </div>
+      )}
     </div>
   );
 };
@@ -108,9 +126,12 @@ const ScheduleItem = ({ time, course, classroom, students }) => {
   );
 };
 
-const ActionButton = ({ title, icon }) => {
+const ActionButton = ({ title, icon, onClick }) => {
   return (
-    <button className="flex items-center gap-3 p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition">
+    <button 
+      onClick={onClick}
+      className="flex items-center gap-3 p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition"
+    >
       {icon}
       <span className="font-medium text-gray-800">{title}</span>
     </button>

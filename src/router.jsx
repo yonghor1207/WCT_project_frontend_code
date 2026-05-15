@@ -28,10 +28,17 @@ import AddAttendance from "./Components/Admin/Attendance/AddAttendance";
 // Teacher imports
 import TeacherLayout from "./Components/Teacher/TeacherLayout";
 import TeacherDashboard from "./Pages/Teacher/Dashboard";
+import TeacherCourses from "./Pages/Teacher/MyCourses";
+import TeacherStudents from "./Pages/Teacher/Students";
+import TeacherAttendance from "./Pages/Teacher/Attendance";
+import TeacherSchedule from "./Pages/Teacher/Schedule";
 
 // Student imports
 import StudentLayoutWrapper from "./Components/Student/StudentLayoutWrapper";
 import StudentDashboard from "./Pages/Student/Dashboard";
+import StudentAttendance from "./Pages/Student/Attendance";
+import StudentSchedule from "./Pages/Student/Schedule";
+import StudentPayments from "./Pages/Student/Payments";
 
 const router = createBrowserRouter([
   {
@@ -217,6 +224,62 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/teacher/courses",
+    element: (
+      <ProtectedRoute allowedRoles={["teacher"]}>
+        <TeacherLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <TeacherCourses />,
+      },
+    ],
+  },
+  {
+    path: "/teacher/students",
+    element: (
+      <ProtectedRoute allowedRoles={["teacher"]}>
+        <TeacherLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <TeacherStudents />,
+      },
+    ],
+  },
+  {
+    path: "/teacher/attendance",
+    element: (
+      <ProtectedRoute allowedRoles={["teacher"]}>
+        <TeacherLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <TeacherAttendance />,
+      },
+    ],
+  },
+  {
+    path: "/teacher/schedule",
+    element: (
+      <ProtectedRoute allowedRoles={["teacher"]}>
+        <TeacherLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <TeacherSchedule />,
+      },
+    ],
+  },
   // Student Routes
   {
     path: "/student-dashboard",
@@ -229,6 +292,62 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <StudentDashboard />,
+      },
+    ],
+  },
+  {
+    path: "/student/courses",
+    element: (
+      <ProtectedRoute allowedRoles={["student"]}>
+        <StudentLayoutWrapper />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <MyCourse />,
+      },
+    ],
+  },
+  {
+    path: "/student/attendance",
+    element: (
+      <ProtectedRoute allowedRoles={["student"]}>
+        <StudentLayoutWrapper />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <StudentAttendance />,
+      },
+    ],
+  },
+  {
+    path: "/student/schedule",
+    element: (
+      <ProtectedRoute allowedRoles={["student"]}>
+        <StudentLayoutWrapper />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <StudentSchedule />,
+      },
+    ],
+  },
+  {
+    path: "/student/payments",
+    element: (
+      <ProtectedRoute allowedRoles={["student"]}>
+        <StudentLayoutWrapper />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <StudentPayments />,
       },
     ],
   },

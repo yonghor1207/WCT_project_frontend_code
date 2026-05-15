@@ -1,9 +1,10 @@
 import React from "react";
-import { Eye, Edit3, UserCheck, UserX, User, School } from "lucide-react";
+import { Eye, Edit3, UserCheck, UserX, User, School, Trash2 } from "lucide-react";
 
 const ClassroomTableComponent = ({
   classrooms,
   onEdit,
+  onDelete,
 }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -41,10 +42,17 @@ const ClassroomTableComponent = ({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => onEdit(classroom)}
-                        className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                         title="Edit classroom"
                       >
                         <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(classroom.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Delete classroom"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>

@@ -47,6 +47,13 @@ export const attendanceApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Attendance"]
         }),
+        deleteAttendance: builder.mutation({
+            query: (id) => ({
+                url: `${BASE_ADMIN_URL}/attendances/${id}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ["Attendance"]
+        }),
     })
 })
 
@@ -55,5 +62,6 @@ export const {
     useGetAttendanceByIdQuery,
     useVerifyAttendanceMutation,
     useCreateAttendanceMutation,
-    useUpdateAttendanceMutation
+    useUpdateAttendanceMutation,
+    useDeleteAttendanceMutation
 } = attendanceApiSlice;

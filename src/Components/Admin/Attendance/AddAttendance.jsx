@@ -32,10 +32,11 @@ const AddAttendance = () => {
     const { data: classroomData } = useGetClassroomQuery();
     const { data: courseData } = useGetCourseQuery();
 
-    const students = studentData?.data?.data.filter(user => user.role === 'student') || [];
-    console.log("student", students);
+    // Extract and filter students properly
+    const users = Array.isArray(studentData?.data) ? studentData.data : [];
+    const students = users.filter(user => user.role === 'student');
     const classrooms = classroomData?.data || [];
-    const courses = courseData?.data.data || [];
+    const courses = Array.isArray(courseData?.data) ? courseData.data : [];
 
     // useEffect(() => {
     //     if (existingAttendance?.data && id) {

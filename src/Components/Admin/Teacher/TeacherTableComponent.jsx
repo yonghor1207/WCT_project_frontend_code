@@ -1,11 +1,12 @@
 import React from "react";
-import { Eye, Edit3, UserCheck, UserX, User } from "lucide-react";
+import { Eye, Edit3, UserCheck, UserX, User, Trash2 } from "lucide-react";
 
 const TeacherTableComponent = ({
   teachers,
   onEdit,
   onView,
   onToggleStatus,
+  onDelete,
 }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -62,7 +63,7 @@ const TeacherTableComponent = ({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => onEdit(teacher)}
-                        className="p-2 text-gid: 6, firstName: 'Sarah', lastName: 'Miller', grade: '11th', rolray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                         title="Edit Teacher"
                       >
                         <Edit3 className="w-4 h-4" />
@@ -80,6 +81,13 @@ const TeacherTableComponent = ({
                         ) : (
                           <UserCheck className="w-4 h-4" />
                         )}
+                      </button>
+                      <button
+                        onClick={() => onDelete(teacher.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Delete teacher"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
