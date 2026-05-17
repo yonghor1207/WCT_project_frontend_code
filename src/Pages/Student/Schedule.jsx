@@ -293,6 +293,12 @@ const DayView = ({ daysOfWeek, selectedDay, setSelectedDay, getClassesForDay }) 
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
+                  {classItem.teacher && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Users className="w-4 h-4" />
+                      <span>{classItem.teacher}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 text-gray-600">
                     <Clock className="w-4 h-4" />
                     <span>{classItem.startTime} - {classItem.endTime}</span>
@@ -325,6 +331,12 @@ const ClassCard = ({ classItem }) => {
       className={`${colorClasses[classItem.color] || 'bg-gray-50 border-gray-500'} border-l-4 rounded p-2 mb-2 hover:shadow-md transition cursor-pointer`}
     >
       <div className="text-xs font-bold text-gray-800 mb-1">{classItem.title}</div>
+      {classItem.teacher && (
+        <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
+          <Users className="w-3 h-3" />
+          <span>{classItem.teacher}</span>
+        </div>
+      )}
       <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
         <Clock className="w-3 h-3" />
         <span>{classItem.startTime} - {classItem.endTime}</span>

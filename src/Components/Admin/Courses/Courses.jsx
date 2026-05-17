@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Filter, BookOpen, GraduationCap,CheckCircle,XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDeactivatedCourseMutation, useGetCourseQuery } from "../../../redux/hooks/courseApiSlice";
+import { useDeactivatedCourseMutation, useGetCourseQuery, useDeleteCourseMutation } from "../../../redux/hooks/courseApiSlice";
 import CourseTableComponent from "./CourseTableComponent";
 import StatCard from "./StatCard";
 
@@ -34,6 +34,7 @@ const Courses = () => {
   };
 
   const [deactivateCourse] = useDeactivatedCourseMutation();
+  const [deleteCourse] = useDeleteCourseMutation();
 
   const handleToggleStatus = async (courseId) => {
     setSelectedCourse(courseId); // Changed from setSelectedStudent
@@ -53,8 +54,23 @@ const Courses = () => {
     }
   };
 
+  const handleDelete = async (courseId) => {
+    if (window.confirm("Are you sure you want to delete this course? This action cannot be undone.")) {
+      try {
+        await deleteCourse(courseId).unwrap();
+        await refetch();
+        toast.success("Course deleted successfully!", {
+          position: "top-right"
+        });
+      } catch (error) {
+        toast.error("Failed to delete course!");
+        console.error("Failed to delete course:", error);
+      }
+    }
+  };
+
   const addNew = () => {
-    navigate("createCourse"); // Changed from createStudent
+    navigate("createCourse");
   };
 
   return (
@@ -135,6 +151,7 @@ const Courses = () => {
             courses={filteredCourses}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
+            onDelete={handleDelete}
           />
         )}
       </div>

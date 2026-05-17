@@ -18,7 +18,6 @@ const StudentTableComponent = ({
               <th className="text-left py-4 px-6 font-semibold text-gray-900">First Name</th>
               <th className="text-left py-4 px-6 font-semibold text-gray-900">Last Name</th>
               <th className="text-left py-4 px-6 font-semibold text-gray-900">Email</th>
-              <th className="text-left py-4 px-6 font-semibold text-gray-900">Phone Number</th>
               <th className="text-left py-4 px-6 font-semibold text-gray-900">Role</th>
               <th className="text-left py-4 px-6 font-semibold text-gray-900">Status</th>
               <th className="text-left py-4 px-6 font-semibold text-gray-900">Actions</th>
@@ -47,7 +46,6 @@ const StudentTableComponent = ({
                   </td>
                   <td className="py-4 px-6 text-gray-700 text-start">{student.last_name || student.lastName}</td>
                   <td className="py-4 px-6 text-blue-600 text-start">{student.email}</td>
-                  <td className="py-4 px-6 text-gray-700">{student.phone}</td>
                   <td className="py-4 px-6 text-gray-700 capitalize">{student.role || student.department}</td>
                   <td className="py-4 px-6">
                     <span

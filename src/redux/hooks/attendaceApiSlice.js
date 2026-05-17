@@ -19,7 +19,7 @@ export const attendanceApiSlice = apiSlice.injectEndpoints({
             query: ({ id, status }) => ({
                 url: `${BASE_ADMIN_URL}/attendances/${id}/verify`,
                 method: "PATCH",
-                body: status
+                body: { status: status }
             })
         }),
         createAttendance: builder.mutation({

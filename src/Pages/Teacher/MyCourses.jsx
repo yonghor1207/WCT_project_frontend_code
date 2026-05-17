@@ -193,6 +193,12 @@ const CourseCard = ({ course, studentCount, attendanceRate, onViewStudents }) =>
       <div className="p-6">
         {/* Course Info */}
         <div className="space-y-2 mb-4">
+          {course.teacher && (
+            <div className="flex items-center text-sm text-gray-600">
+              <Users className="w-4 h-4 mr-2" />
+              <span>Instructor: {course.teacher.first_name} {course.teacher.last_name}</span>
+            </div>
+          )}
           <div className="flex items-center text-sm text-gray-600">
             <Clock className="w-4 h-4 mr-2" />
             <span>Duration: {course.duration || "8 weeks"}</span>

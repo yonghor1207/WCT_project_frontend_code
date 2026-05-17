@@ -7,7 +7,8 @@ export const userApiSlice = apiSlice.injectEndpoints({
             query: () => ({
                 url: `${BASE_ADMIN_URL}/users`,
                 method: "GET",
-            })
+            }),
+            providesTags: ['User']
         }),
 
         createUser: builder.mutation({

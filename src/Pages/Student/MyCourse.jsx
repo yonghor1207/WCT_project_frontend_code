@@ -83,7 +83,7 @@ const MyCourse = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <StatCard
           icon={<BookOpen className="w-6 h-6 text-purple-600" />}
           title="Enrolled Courses"
@@ -95,12 +95,6 @@ const MyCourse = () => {
           title="Active Courses"
           value={courses.filter(c => c.status === 1).length}
           bgColor="bg-green-50"
-        />
-        <StatCard
-          icon={<Clock className="w-6 h-6 text-blue-600" />}
-          title="Total Hours"
-          value={courses.length * 40} // Assuming 40 hours per course
-          bgColor="bg-blue-50"
         />
       </div>
 
@@ -123,7 +117,6 @@ const MyCourse = () => {
             <CourseCard 
               key={course.id} 
               course={course}
-              progress={calculateCourseProgress(course.id)}
             />
           ))}
         </div>
@@ -146,7 +139,7 @@ const StatCard = ({ icon, title, value, bgColor }) => {
   );
 };
 
-const CourseCard = ({ course, progress }) => {
+const CourseCard = ({ course }) => {
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
       {/* Course Header */}
@@ -161,10 +154,12 @@ const CourseCard = ({ course, progress }) => {
       <div className="p-6">
         {/* Course Info */}
         <div className="space-y-3 mb-4">
-          <div className="flex items-center text-sm text-gray-600">
-            <User className="w-4 h-4 mr-2" />
-            <span>Instructor: {course.instructor || "TBA"}</span>
-          </div>
+          {course.teacher && (
+            <div className="flex items-center text-sm text-gray-600">
+              <User className="w-4 h-4 mr-2" />
+              <span>Instructor: {course.teacher.first_name} {course.teacher.last_name}</span>
+            </div>
+          )}
           <div className="flex items-center text-sm text-gray-600">
             <Clock className="w-4 h-4 mr-2" />
             <span>Duration: {course.duration || "8 weeks"}</span>
@@ -177,24 +172,8 @@ const CourseCard = ({ course, progress }) => {
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">Progress</span>
-            <span className="text-sm font-medium text-purple-600">
-              {progress}%
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-purple-600 h-2 rounded-full transition-all"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        </div>
-
         {/* Status Badge */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center pt-4 border-t">
           <span
             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
               course.status === 1
@@ -204,9 +183,6 @@ const CourseCard = ({ course, progress }) => {
           >
             {course.status === 1 ? "Active" : "Inactive"}
           </span>
-          <button className="text-purple-600 hover:text-purple-700 font-medium text-sm">
-            View Details →
-          </button>
         </div>
       </div>
     </div>

@@ -111,14 +111,13 @@ const TeacherSchedule = () => {
   };
 
   const exportSchedule = () => {
-    const headers = ["Day", "Course", "Classroom", "Start Time", "End Time", "Students"];
+    const headers = ["Day", "Course", "Classroom", "Start Time", "End Time"];
     const rows = filteredSchedule.map(s => [
       s.day,
       s.course,
       s.classroom,
       s.startTime,
       s.endTime,
-      s.students,
     ]);
 
     const csvContent = [
@@ -183,12 +182,12 @@ const TeacherSchedule = () => {
               </p>
               <div className="flex gap-4 text-xs text-gray-600">
                 <span className="flex items-center gap-1">
-                  <Users className="w-3 h-3" />
-                  {upcomingClass.students} students
-                </span>
-                <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {upcomingClass.startTime} - {upcomingClass.endTime}
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  {upcomingClass.classroom}
                 </span>
               </div>
             </div>
@@ -219,12 +218,12 @@ const TeacherSchedule = () => {
         <div className="bg-purple-50 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium mb-1">Total Students</p>
+              <p className="text-gray-600 text-sm font-medium mb-1">Classrooms</p>
               <p className="text-3xl font-bold text-gray-800">
-                {filteredSchedule.reduce((sum, s) => sum + s.students, 0)}
+                {new Set(filteredSchedule.map(s => s.classroom_id)).size}
               </p>
             </div>
-            <Users className="w-8 h-8 text-purple-600" />
+            <MapPin className="w-8 h-8 text-purple-600" />
           </div>
         </div>
         <div className="bg-orange-50 rounded-lg p-6">
@@ -428,8 +427,8 @@ const DayView = ({ todayClasses, onDeleteClass }) => {
                   <span>{classItem.classroom}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
-                  <Users className="w-4 h-4" />
-                  <span>{classItem.students} students</span>
+                  <BookOpen className="w-4 h-4" />
+                  <span>{classItem.course}</span>
                 </div>
               </div>
               {classItem.teacher && (
@@ -501,7 +500,6 @@ const AddClassModal = ({ courses, classrooms, teachers, onClose, onAdd }) => {
     day: "Monday",
     startTime: "09:00",
     endTime: "10:30",
-    students: 25,
   });
 
   const colors = ["blue", "purple", "green", "orange", "indigo"];
@@ -540,7 +538,6 @@ const AddClassModal = ({ courses, classrooms, teachers, onClose, onAdd }) => {
       day: formData.day,
       startTime: formData.startTime,
       endTime: formData.endTime,
-      students: parseInt(formData.students),
       color: colors[Math.floor(Math.random() * colors.length)],
     };
 
@@ -676,22 +673,6 @@ const AddClassModal = ({ courses, classrooms, teachers, onClose, onAdd }) => {
                   </option>
                 ))}
               </select>
-            </div>
-
-            {/* Number of Students */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Number of Students
-              </label>
-              <input
-                type="number"
-                name="students"
-                value={formData.students}
-                onChange={handleChange}
-                min="1"
-                max="100"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
             </div>
 
             {/* Start Time */}

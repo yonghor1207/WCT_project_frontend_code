@@ -29,7 +29,13 @@ const Payments = () => {
     const filteredStudents = useMemo(() => {
         if (!Array.isArray(students)) return [];
         
-        return students.filter((student) => {
+        console.log("Filtering students:", {
+            totalStudents: students.length,
+            statusFilter,
+            searchTerm
+        });
+        
+        const filtered = students.filter((student) => {
             const matchesSearch = 
                 `${student.first_name ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 `${student.last_name ?? ""}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -41,6 +47,9 @@ const Payments = () => {
 
             return matchesSearch && matchesStatus;
         });
+        
+        console.log("Filtered students:", filtered.length);
+        return filtered;
     }, [students, searchTerm, statusFilter]);
 
     const handleStatusChange = async (studentId, newStatus) => {
@@ -57,6 +66,8 @@ const Payments = () => {
     };
 
     const handleClassChange = async (studentId, newClass) => {
+        console.log("Updating class for student:", studentId, "to:", newClass);
+        
         // Optimistic update
         setStudents(prevStudents => 
             prevStudents.map(student => 
@@ -65,20 +76,23 @@ const Payments = () => {
         );
 
         try {
-            await updateUser({ id: studentId, data: { class: newClass } }).unwrap();
+            const result = await updateUser({ id: studentId, data: { class: newClass } }).unwrap();
+            console.log("Class update result:", result);
             await refetch();
             toast.success("Class updated successfully!", {
                 position: "top-right"
             });
         } catch (error) {
+            console.error("Failed to update class:", error);
             // Revert on error
             await refetch();
             toast.error("Failed to update class!");
-            console.error("Failed to update class:", error);
         }
     };
 
     const handleYearChange = async (studentId, newYear) => {
+        console.log("Updating year for student:", studentId, "to:", newYear);
+        
         // Optimistic update
         setStudents(prevStudents => 
             prevStudents.map(student => 
@@ -87,16 +101,17 @@ const Payments = () => {
         );
 
         try {
-            await updateUser({ id: studentId, data: { year: newYear } }).unwrap();
+            const result = await updateUser({ id: studentId, data: { year: newYear } }).unwrap();
+            console.log("Year update result:", result);
             await refetch();
             toast.success("Year updated successfully!", {
                 position: "top-right"
             });
         } catch (error) {
+            console.error("Failed to update year:", error);
             // Revert on error
             await refetch();
             toast.error("Failed to update year!");
-            console.error("Failed to update year:", error);
         }
     };
 
@@ -141,58 +156,19 @@ const Payments = () => {
                         />
                     </div>
                     
-                    {/* Status Filter Buttons */}
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setStatusFilter("all")}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                statusFilter === "all"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
+                    {/* Status Filter Dropdown */}
+                    <div className="w-64">
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                         >
-                            All
-                        </button>
-                        <button
-                            onClick={() => setStatusFilter("paid_1_semester")}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                statusFilter === "paid_1_semester"
-                                    ? "bg-green-600 text-white"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                        >
-                            Paid 1 Sem
-                        </button>
-                        <button
-                            onClick={() => setStatusFilter("paid_2_semester")}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                statusFilter === "paid_2_semester"
-                                    ? "bg-green-700 text-white"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                        >
-                            Paid 2 Sem
-                        </button>
-                        <button
-                            onClick={() => setStatusFilter("pending")}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                statusFilter === "pending"
-                                    ? "bg-yellow-600 text-white"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                        >
-                            Pending
-                        </button>
-                        <button
-                            onClick={() => setStatusFilter("not_yet")}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                statusFilter === "not_yet"
-                                    ? "bg-red-600 text-white"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                        >
-                            Not Yet
-                        </button>
+                            <option value="all">All Status</option>
+                            <option value="paid_1_semester">Paid 1 Semester</option>
+                            <option value="paid_2_semester">Paid 2 Semester</option>
+                            <option value="pending">Pending</option>
+                            <option value="not_yet">Not Yet</option>
+                        </select>
                     </div>
                 </div>
 

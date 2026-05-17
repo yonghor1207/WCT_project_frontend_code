@@ -100,10 +100,19 @@ const TeacherAttendance = () => {
     try {
       // If the student doesn't have an attendance record yet, create one first
       if (!record.hasRecord) {
-        // Use default classroom and course if not assigned
-        // Get first available classroom and course as defaults
-        const defaultClassroom = classrooms.length > 0 ? classrooms[0].id : 1;
-        const defaultCourse = courses.length > 0 ? courses[0].id : 1;
+        // Check if we have valid classroom and course data
+        if (classrooms.length === 0) {
+          toast.error("No classrooms available. Please create a classroom first.");
+          return;
+        }
+        if (courses.length === 0) {
+          toast.error("No courses available. Please create a course first.");
+          return;
+        }
+        
+        // Use first available classroom and course as defaults
+        const defaultClassroom = classrooms[0].id;
+        const defaultCourse = courses[0].id;
         
         const attendanceData = {
           student_id: record.student_id,
@@ -113,20 +122,22 @@ const TeacherAttendance = () => {
           status: status
         };
         
+        console.log("Creating attendance with data:", attendanceData);
         await createAttendance(attendanceData).unwrap();
         toast.success(`Marked as ${status}`);
       } else {
-        // Update existing record
+        // Update existing record - send just the status string, not an object
+        console.log("Updating attendance:", { id: record.id, status: status });
         await verifyAttendance({
           id: record.id,
-          status: { status: status },
+          status: status,
         }).unwrap();
         toast.success(`Marked as ${status}`);
       }
       refetch();
     } catch (error) {
       console.error("Failed to update attendance:", error);
-      toast.error("Failed to update attendance");
+      toast.error(`Failed to update attendance: ${error?.data?.message || error.message || 'Unknown error'}`);
     }
   };
 
@@ -140,7 +151,7 @@ const TeacherAttendance = () => {
       const promises = selectedStudents.map(id =>
         verifyAttendance({
           id,
-          status: { status: status },
+          status: status,
         }).unwrap()
       );
       await Promise.all(promises);

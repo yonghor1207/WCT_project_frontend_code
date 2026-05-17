@@ -1,9 +1,10 @@
-import { Edit3, UserCheck, UserX, User } from "lucide-react";
+import { Edit3, UserCheck, UserX, User, Trash2 } from "lucide-react";
 
 const CourseTableComponent = ({
     courses,
     onEdit,
     onToggleStatus,
+    onDelete,
 }) => {
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -50,7 +51,7 @@ const CourseTableComponent = ({
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => onEdit(course)}
-                                                className="p-2 text-gid: 6, firstName: 'Sarah', lastName: 'Miller', grade: '11th', rolray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                                                className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                                                 title="Edit course"
                                             >
                                                 <Edit3 className="w-4 h-4" />
@@ -68,6 +69,13 @@ const CourseTableComponent = ({
                                                 ) : (
                                                     <UserCheck className="w-4 h-4" />
                                                 )}
+                                            </button>
+                                            <button
+                                                onClick={() => onDelete(course.id)}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Delete course"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
                                     </td>

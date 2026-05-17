@@ -14,6 +14,7 @@ const PaymentTableComponent = ({
             case "paid_2_semester":
                 return `${baseClasses} bg-green-100 text-green-800 focus:ring-green-500`;
             case "pending":
+            case "pending_semester_2":
                 return `${baseClasses} bg-yellow-100 text-yellow-800 focus:ring-yellow-500`;
             case "not_yet":
                 return `${baseClasses} bg-red-100 text-red-800 focus:ring-red-500`;
@@ -87,9 +88,10 @@ const PaymentTableComponent = ({
                                         onChange={(e) => onStatusChange(student.id, e.target.value)}
                                         className={getSelectClass(student.payment_status)}
                                     >
-                                        <option value="paid_1_semester">Paid 1 Semester</option>
-                                        <option value="paid_2_semester">Paid 2 Semester</option>
-                                        <option value="pending">Pending</option>
+                                        <option value="paid_1_semester">Semester 1 Paid</option>
+                                        <option value="paid_2_semester">Semester 2 Paid</option>
+                                        <option value="pending">Pending for Semester 1</option>
+                                        <option value="pending_semester_2">Pending for Semester 2</option>
                                         <option value="not_yet">Not Yet</option>
                                     </select>
                                 </td>

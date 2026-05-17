@@ -41,6 +41,12 @@ export const courseApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Course"]
         }),
+        deleteCourse: builder.mutation({
+            query: (id) => ({
+                url: `${BASE_ADMIN_URL}/courses/${id}`,
+                method: "DELETE"
+            })
+        }),
     })
 })
 
@@ -50,4 +56,5 @@ export const {
     useDeactivatedCourseMutation,
     useCreateCourseMutation,
     useUpdateCourseMutation,
+    useDeleteCourseMutation,
 } = courseApiSlice;
