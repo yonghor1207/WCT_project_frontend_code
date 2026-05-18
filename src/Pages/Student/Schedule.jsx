@@ -5,7 +5,6 @@ import {
   MapPin,
   BookOpen,
   Users,
-  Bell,
   Grid3x3,
   List,
 } from "lucide-react";
@@ -43,15 +42,6 @@ const StudentSchedule = () => {
     return mySchedule.filter(s => s.day === today);
   };
 
-  const getNextClass = () => {
-    const todayClasses = getTodayClasses();
-    const now = new Date();
-    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    
-    return todayClasses.find(c => c.startTime > currentTime) || todayClasses[0];
-  };
-
-  const nextClass = getNextClass();
   const todayClasses = getTodayClasses();
 
   return (
@@ -63,31 +53,6 @@ const StudentSchedule = () => {
           <p className="text-gray-600">View your weekly class timetable</p>
         </div>
       </div>
-
-      {/* Next Class Alert */}
-      {nextClass && (
-        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <Bell className="w-5 h-5 text-purple-600 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-purple-900 mb-1">Next Class</h3>
-              <p className="text-sm text-gray-700 mb-2">
-                {nextClass.title} - {nextClass.course}
-              </p>
-              <div className="flex gap-4 text-xs text-gray-600">
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {nextClass.startTime} - {nextClass.endTime}
-                </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {nextClass.classroom}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
